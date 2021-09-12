@@ -16,8 +16,6 @@ class RatingSerializer(serializers.ModelSerializer):
         ]
 
 
-class UpdateRatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rating
-        fields = ('id', 'album_rate', 'album_id', 'comment', 'created_at', 'updated_at')
+class UpdateRatingSerializer(RatingSerializer):
+    class Meta(RatingSerializer.Meta):
         read_only_fields = ('album_id',)
