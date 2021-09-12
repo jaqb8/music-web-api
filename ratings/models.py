@@ -13,6 +13,7 @@ class Rating(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     album_id = models.CharField(max_length=255)
+    comment = models.TextField(max_length=255, blank=True)
 
     def __str__(self):
         return f'Album ID: {self.album_id}, Rate: {self.album_rate}, User: {self.user.username}'

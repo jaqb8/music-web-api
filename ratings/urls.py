@@ -1,8 +1,10 @@
 from django.urls import path
+from rest_framework import routers
 from . import views
 
 app_name = 'ratings'
 
-urlpatterns = [
-    path('create-rating/', views.CreateRatingView.as_view(), name='create-rating')
-]
+router = routers.SimpleRouter()
+router.register('', views.RatingViewSet)
+
+urlpatterns = router.urls

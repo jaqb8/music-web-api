@@ -4,10 +4,9 @@ from .models import Rating
 
 
 class RatingSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Rating
-        fields = ('album_rate', 'album_id')
+        fields = ('id', 'album_rate', 'album_id', 'comment')
         validators = [
             UniqueTogetherValidator(
                 queryset=Rating.objects.all(),
@@ -16,6 +15,9 @@ class RatingSerializer(serializers.ModelSerializer):
             )
         ]
 
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     return Rating.objects.create(**validated_data)
+
+class UpdateRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ('id', 'album_rate', 'album_id', 'comment')
+        read_only_fields = ('album_id',)
