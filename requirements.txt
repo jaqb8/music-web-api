@@ -1,5 +1,6 @@
-Django
-djangorestframework
-djangorestframework-simplejwt
-django-cors-headers
-spotipy
+Django>=2.2.0
+djangorestframework>=3.12.4
+psycopg2>=2.8.0
+djangorestframework-simplejwt>=4.8.0
+django-cors-headers>=3.8.0
+spotipy>=2.19.0
