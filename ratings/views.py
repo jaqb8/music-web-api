@@ -30,14 +30,18 @@ class RatingViewSet(viewsets.ModelViewSet):
         return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+        """
+        Check if album is already rated by currently authenticated user.
+        If not create new Rating object.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        if len(self.get_queryset().filter(album_id=self.request.data['album_id'])) > 0:
-            return Response({'msg': 'Album has been already rated.'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            self.perform_create(serializer)
+        if len(self.get_queryset().filter(album_id=self.request.data['album_id'])) == 0:
+            serializer.save(user=self.request.user)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'msg': 'Album has been already rated.'}, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         """Delete rating object and return appropriate message"""
