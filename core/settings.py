@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-xtm!@@h1-^&s)nbq+co2q@n08*z=v!dpil7+m^qc8#ci&ofn*8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     'users.apps.UsersConfig',
-    'ratings.apps.RatingsConfig'
+    'ratings.apps.RatingsConfig',
+    'review.apps.ReviewConfig'
 ]
 
 REST_FRAMEWORK = {
