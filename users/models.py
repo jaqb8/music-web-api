@@ -12,5 +12,9 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def profiles_ratings(self):
+        """Returns all ratings related to user profile"""
+        return self.rating_set.all()
+
     def __str__(self):
         return str(self.user.username)
