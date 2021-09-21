@@ -24,8 +24,9 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    username = serializers.StringRelatedField()
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'username', 'following')
+        fields = ('id', 'user', 'following')
+        read_only_fields = ('following', )
