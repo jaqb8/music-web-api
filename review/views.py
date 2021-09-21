@@ -1,6 +1,6 @@
 from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .serializers import ReviewSerializer, ReviewCommentSerializer
 from .models import Review
 
@@ -24,7 +24,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         """Return appropriate serializer class based on called endpoint"""
-        """Return appropriate serializer class based on called endpoint"""
         if self.action == 'update':
             return ReviewCommentSerializer
         return self.serializer_class
@@ -45,3 +44,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'msg': 'Rating deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PublicReviewViewSet(viewsets.ModelViewSet):
+    """View set for managing Rating objects in database"""
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        """
+        Return all user's objects and filter by album_id
+        """
+        album_id = self.request.query_params.get('album_id')
+        queryset = self.queryset.filter(album_id=album_id)
+        return queryset

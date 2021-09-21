@@ -5,7 +5,7 @@ from .models import Review
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'album_id', 'content', 'created_at', 'updated_at')
+        fields = ('id', 'album_id', 'content', 'created_at', 'updated_at', 'user')
 
 
 class ReviewCommentSerializer(ReviewSerializer):
