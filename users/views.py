@@ -1,4 +1,4 @@
-from rest_framework import generics, views, status, viewsets
+from rest_framework import generics, views, status, viewsets, decorators
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -30,6 +30,21 @@ class BlacklistTokenView(views.APIView):
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
 
+    @decorators.action(methods=['POST'], detail=True, url_path='follow')
+    def follow_user(self, request, pk=None):
+        """Add user to following list and return response with whole following list"""
+        instance = self.get_object()
+        authenticated_user = UserProfile.objects.get(user=request.user)
+        serializer = self.get_serializer(authenticated_user, data=request.data)
+        serializer.is_valid(raise_exception=True)
 
+        if authenticated_user == instance:
+            return Response({'msg': 'Unable to follow own profile'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        else:
+            authenticated_user.following.add(instance.user)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)

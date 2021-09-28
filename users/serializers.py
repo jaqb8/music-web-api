@@ -25,6 +25,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
+    following = serializers.SlugRelatedField(many=True, read_only=True, slug_field='username')
 
     class Meta:
         model = UserProfile
