@@ -28,6 +28,15 @@ class BlacklistTokenView(views.APIView):
             return Response({'error': 'Provide refresh token.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MyProfileDetailView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        object = UserProfile.objects.get(user=self.request.user)
+        return object
+
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -35,7 +44,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @decorators.action(methods=['POST'], detail=True, url_path='follow')
     def follow_user(self, request, pk=None):
-        """Add user to following list and return response with whole following list"""
+        """Add or remove user from following list and return response with whole following list"""
         instance = self.get_object()
         authenticated_user = UserProfile.objects.get(user=request.user)
         serializer = self.get_serializer(authenticated_user, data=request.data)
@@ -45,6 +54,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return Response({'msg': 'Unable to follow own profile'},
                             status=status.HTTP_400_BAD_REQUEST)
         else:
-            authenticated_user.following.add(instance.user)
+            if instance.user not in authenticated_user.following.all():
+                authenticated_user.following.add(instance.user)
+            else:
+                authenticated_user.following.remove(instance.user)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

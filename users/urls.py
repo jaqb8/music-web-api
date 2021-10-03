@@ -13,5 +13,6 @@ urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('logout/', views.BlacklistTokenView.as_view(), name='blacklist-token'),
+    path('my-profile', views.MyProfileDetailView.as_view(), name='my-profile'),
     path('profile/', include(router.urls))
 ]

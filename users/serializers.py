@@ -31,3 +31,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ('id', 'user', 'following')
         read_only_fields = ('following', )
+
