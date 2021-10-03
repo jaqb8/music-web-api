@@ -33,8 +33,8 @@ class MyProfileDetailView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
 
     def get_object(self):
-        object = UserProfile.objects.get(user=self.request.user)
-        return object
+        obj = UserProfile.objects.get(user=self.request.user)
+        return obj
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
