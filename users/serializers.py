@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from .models import UserProfile
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -20,3 +21,14 @@ class RegisterUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a new user and return it"""
         return get_user_model().objects.create_user(**validated_data)
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    following = serializers.SlugRelatedField(many=True, read_only=True, slug_field='username')
+
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'user', 'following')
+        read_only_fields = ('following', )
+
