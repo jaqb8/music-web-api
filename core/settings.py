@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     'users.apps.UsersConfig',
-    'ratings.apps.RatingsConfig'
+    'ratings.apps.RatingsConfig',
+    'spotify_api.apps.SpotifyApiConfig',
+    'album_activity.apps.AlbumActivityConfig'
 ]
 
 REST_FRAMEWORK = {
