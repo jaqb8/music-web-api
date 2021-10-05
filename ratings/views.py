@@ -1,9 +1,9 @@
-from django.shortcuts import render
-from rest_framework import generics, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import RatingSerializer, UpdateRatingSerializer
 from .models import Rating
+from django.db.models import Avg
 
 
 class RatingViewSet(viewsets.ModelViewSet):
@@ -18,6 +18,7 @@ class RatingViewSet(viewsets.ModelViewSet):
         and filter by album_id if provided as query parameter
         """
         queryset = self.queryset.filter(user=self.request.user)
+        print(self.request.query_params.get('album_id'))
         album_id = self.request.query_params.get('album_id')
         if album_id:
             queryset = queryset.filter(album_id=album_id)
@@ -48,3 +49,26 @@ class RatingViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'msg': 'Rating deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PublicRatingViewSet(viewsets.ReadOnlyModelViewSet):
+    """View set for managing Rating objects in database"""
+    serializer_class = RatingSerializer
+    queryset = Rating.objects.all()
+
+    def get_queryset(self):
+        """
+        Return all user's objects and filter by album_id
+        """
+        album_id = self.request.query_params.get('album_id')
+        queryset = self.queryset.filter(album_id=album_id)
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        avg = round(queryset.aggregate(Avarage_name=Avg('album_rate'))['Avarage_name'], 1)
+        rating_count = queryset.count()
+        return Response({'avg': avg, 'count': rating_count})
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response({'msg': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)

@@ -46,9 +46,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return Response({'msg': 'Rating deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class PublicReviewViewSet(viewsets.ModelViewSet):
+class PublicReviewViewSet(viewsets.ReadOnlyModelViewSet):
     """View set for managing Rating objects in database"""
-    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
 
@@ -59,3 +58,6 @@ class PublicReviewViewSet(viewsets.ModelViewSet):
         album_id = self.request.query_params.get('album_id')
         queryset = self.queryset.filter(album_id=album_id)
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response({'msg': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)

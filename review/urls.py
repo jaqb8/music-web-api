@@ -5,7 +5,7 @@ from . import views
 app_name = 'review'
 
 router = routers.SimpleRouter()
-# router.register('', views.ReviewViewSet)
-router.register('', views.PublicReviewViewSet)
+router.register('public', views.PublicReviewViewSet)
+router.register('', views.ReviewViewSet)
 
 urlpatterns = router.urls
