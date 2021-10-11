@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'ratings.apps.RatingsConfig',
-    'review.apps.ReviewConfig'
+    'review.apps.ReviewConfig',
 ]
 
 REST_FRAMEWORK = {

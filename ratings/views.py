@@ -1,7 +1,7 @@
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RatingSerializer, UpdateRatingSerializer
+from .serializers import RatingSerializer, UpdateRatingSerializer, BestOfSerializer
 from .models import Rating
 from django.db.models import Avg
 
@@ -72,3 +72,9 @@ class PublicRatingViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         return Response({'msg': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BestOfViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    """View set for managing Best of objects from rating models"""
+    serializer_class = BestOfSerializer
+    queryset = Rating.objects.values('album_id').annotate(avg_rate=Avg('album_rate')).order_by('-avg_rate')
