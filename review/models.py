@@ -1,11 +1,11 @@
 from django.db import models
-from django.conf import settings
+from users.models import UserProfile
 
 
 class Review(models.Model):
     """ Album review model"""
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        UserProfile,
         on_delete=models.CASCADE
     )
     album_id = models.CharField(max_length=255)
