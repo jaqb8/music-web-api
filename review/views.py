@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .serializers import ReviewSerializer, ReviewCommentSerializer
 from .models import Review
+from users.models import UserProfile
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -16,7 +17,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         Return only current authenticated user's objects
         and filter by album_id if provided as query parameter
         """
-        queryset = self.queryset.filter(user=self.request.user)
+        queryset = self.queryset.filter(user=self._get_user_profile())
         album_id = self.request.query_params.get('album_id')
         if album_id:
             queryset = queryset.filter(album_id=album_id)
@@ -35,7 +36,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=self.request.user)
+        serializer.save(user=self._get_user_profile())
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -44,6 +45,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'msg': 'Rating deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+    def _get_user_profile(self):
+        return UserProfile.objects.get(user=self.request.user)
 
 
 class PublicReviewViewSet(viewsets.ReadOnlyModelViewSet):
