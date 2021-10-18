@@ -19,8 +19,7 @@ class AlbumActivity(models.Model):
     album_id = models.CharField(max_length=255)
     activity = models.CharField(
         max_length=3,
-        choices=ActivityEnum.choices,
-        blank=True
+        choices=ActivityEnum.choices
     )
 
     def __str__(self):
