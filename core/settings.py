@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'ratings.apps.RatingsConfig',
     'review.apps.ReviewConfig',
+    'spotify_api.apps.SpotifyApiConfig',
+    'album_activity.apps.AlbumActivityConfig'
 ]
 
 REST_FRAMEWORK = {
