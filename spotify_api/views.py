@@ -1,5 +1,4 @@
 from rest_framework import views, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -7,7 +6,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 class SpotifyBaseView(views.APIView):
     """Base Spotify view with Spotify authentication"""
-    permission_classes = (IsAuthenticated,)
     spotify_client = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
 
 
