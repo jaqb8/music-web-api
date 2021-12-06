@@ -8,7 +8,7 @@ class ListAttr:
     """Helper class for managing list type attributes of data classes"""
 
     @staticmethod
-    def _set_list_attr(class_object, json_objects_list):
+    def _process_list_attr(class_object, json_objects_list):
         """Parse list of JSON objects into list of model objects
         @param class_object:        model class of incoming data
         @type class_object:         type
@@ -18,16 +18,13 @@ class ListAttr:
         @rtype:                     List
         """
 
-        kwargs = class_object.__annotations__
-        field_names_list = list(kwargs)
+        class_fields = class_object.__annotations__
 
         objects_list = list()
+
         for obj in json_objects_list:
-
-            for field in field_names_list:
-                kwargs[field] = obj[field]
-
-            objects_list.append(class_object(**kwargs))
+            obj_args = {key: value for key, value in obj.items() if key in class_fields}
+            objects_list.append(class_object(**obj_args))
 
         return objects_list
 
@@ -65,8 +62,8 @@ class SearchItem(ListAttr):
     images: List[Image]
 
     def __post_init__(self):
-        self.artists = self._set_list_attr(Artist, self.artists)
-        self.images = self._set_list_attr(Image, self.images)
+        self.artists = self._process_list_attr(Artist, self.artists)
+        self.images = self._process_list_attr(Image, self.images)
 
 
 @dataclass
@@ -80,6 +77,6 @@ class Album(ListAttr):
     images: List[Image]
 
     def __post_init__(self):
-        self.artists = self._set_list_attr(Artist, self.artists)
-        self.tracks = self._set_list_attr(Track, self.tracks)
-        self.images = self._set_list_attr(Image, self.images)
+        self.artists = self._process_list_attr(Artist, self.artists)
+        self.tracks = self._process_list_attr(Track, self.tracks)
+        self.images = self._process_list_attr(Image, self.images)
