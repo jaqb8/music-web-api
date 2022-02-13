@@ -53,6 +53,9 @@ services:
 
       - db
 
+    networks:
+      - djangonetwork
+
   db:
 
     image: postgres:11-alpine
@@ -75,7 +78,13 @@ services:
 
     restart: "on-failure"
 
+    networks:
+      - djangonetwork
 
+
+networks:
+    djangonetwork:
+        driver: bridge
 
 volumes:
 
