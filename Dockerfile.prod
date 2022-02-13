@@ -3,7 +3,7 @@ FROM python:3.8.3-alpine
 
 ENV MICRO_SERVICE=/home/app/music-web-api
 
-RUN addgroup -S $APP_USER && adduser -S $APP_USER -G $APP_USER
+RUN addgroup -S user && adduser -S user -G user
 
 # set work directory
 
