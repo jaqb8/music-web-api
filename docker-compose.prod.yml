@@ -1,35 +1,86 @@
-version: "3"
+version: "3.7"
 
 services:
-  app-back-prod:
-    image: index.docker.io/jaqb8/music-web:latest
-    container_name: app-back
-    build:
-      context: .
+
+  nginx:
+
+    build: ./nginx
+
     ports:
-      - "8000:8000"
+
+      - 1300:80
+
     volumes:
-      - .:/app
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    environment:
-      - DB_HOST=db
-      - DB_NAME=app
-      - DB_USER=postgres
-      - DB_PASS=umniedziala
-      - SPOTIPY_CLIENT_ID=fffd7d3c7c9e47169f115bd62e2f4c47
-      - SPOTIPY_CLIENT_SECRET=0d363626bc654faa93276b4b7b16649b
+
+      - static_volume:/home/app/music-web-api/static
+
     depends_on:
-      - db
-  db:
-    image: postgres:10-alpine
-    environment:
-      - POSTGRES_DB=app
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=umniedziala
-  watchtower:
-    image: containrrr/watchtower
+
+      - web
+
+    restart: "on-failure"
+
+  web:
+
+    build: . #build the image for the web service from the dockerfile in parent directory
+
+    command: sh -c "python manage.py makemigrations &&
+
+                    python manage.py migrate &&
+
+                    gunicorn core.wsgi:application --bind 0.0.0.0:${APP_PORT}"
+
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30
+
+      - .:/music-web-api:rw # map data and files from parent directory in host to microservice directory in docker containe
+
+      - static_volume:/home/app/music-web-api/static
+
+    env_file:
+
+      - .env
+
+    image: music-web-api
+
+
+    expose:
+
+      - ${APP_PORT}
+
+    restart: "on-failure"
+
+    depends_on:
+
+      - db
+
+  db:
+
+    image: postgres:11-alpine
+
+    volumes:
+
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+      - postgres_data:/var/lib/postgresql/data/
+
+    environment:
+
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+      - POSTGRES_DB=${DB_NAME}
+
+      - PGPORT=${DB_PORT}
+
+      - POSTGRES_USER=${POSTGRES_USER}
+
+    restart: "on-failure"
+
+
+
+volumes:
+
+  postgres_data:
+
+  static_volume:
+
+
