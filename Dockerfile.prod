@@ -1,54 +1,19 @@
 FROM python:3.8.3-alpine
 
-
-ENV MICRO_SERVICE=/home/app/music-web-api
-
-RUN addgroup -S user && adduser -S user -G user
-
-# set work directory
-
-
-
-RUN mkdir -p $MICRO_SERVICE
-
-RUN mkdir -p $MICRO_SERVICE/static
-
-
-# where the code lives
-
-WORKDIR $MICRO_SERVICE
-
-
-# set environment variables
-
-ENV PYTHONDONTWRITEBYTECODE 1
-
+ENV PYTHONONWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-
-# install psycopg2 dependencies
-
 RUN apk update \
-
     && apk add --virtual build-deps gcc python3-dev musl-dev \
-
     && apk add postgresql-dev gcc python3-dev musl-dev \
-
     && apk del build-deps \
-
     && apk --no-cache add musl-dev linux-headers g++
 
-# install dependencies
+RUN mkdir /app
+WORKDIR /app
 
 RUN pip install --upgrade pip
-
-# copy project
-
-COPY . $MICRO_SERVICE
-
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./entrypoint.sh $MICRO_SERVICE
-
-
-CMD ["/bin/bash", "/home/app/music-web-api/entrypoint.sh"]
+COPY . /app

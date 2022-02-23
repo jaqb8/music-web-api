@@ -1,97 +1,40 @@
 version: "3.7"
 
 services:
-
   nginx:
-
     build: ./nginx
-
+    container_name: test_deploy_name
     ports:
-
-      - 1300:80
-
+      - "5000:80"
     volumes:
-
-      - static_volume:/home/app/music-web-api/static
-
+      - staticfiles:/app/static/
     depends_on:
-
       - web
-
-    restart: "on-failure"
-
   web:
-
     build:
       context: .
       dockerfile: Dockerfile.prod
-
     command: sh -c "python manage.py makemigrations &&
-
-                    python manage.py migrate &&
-
-                    gunicorn core.wsgi:application --bind 0.0.0.0:${APP_PORT}"
-
+      python manage.py migrate &&
+      gunicorn core.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-
-      - .:/music-web-api:rw # map data and files from parent directory in host to microservice directory in docker containe
-
-      - static_volume:/home/app/music-web-api/static
-
+      - .:/app/
+      - staticfiles:/app/static/
     env_file:
-
       - .env
-
-    image: music-web-api
-
-
     expose:
-
-      - ${APP_PORT}
-
-    restart: "on-failure"
-
+      - 8000
     depends_on:
-
       - db
-
-    networks:
-      - djangonetwork
-
   db:
-
     image: postgres:11-alpine
-
     volumes:
-
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-
       - postgres_data:/var/lib/postgresql/data/
-
     environment:
-
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-
-      - POSTGRES_DB=${DB_NAME}
-
-      - PGPORT=${DB_PORT}
-
-      - POSTGRES_USER=${POSTGRES_USER}
-
-    restart: "on-failure"
-
-    networks:
-      - djangonetwork
-
-
-networks:
-    djangonetwork:
-        driver: bridge
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=hello
 
 volumes:
-
   postgres_data:
-
-  static_volume:
-
-
+  staticfiles:
