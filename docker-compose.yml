@@ -1,28 +1,37 @@
-version: "3"
+version: '3'
 
 services:
-  app:
+  api:
     build:
-      context: .
+      context: ./api
+    command: sh -c "python manage.py makemigrations &&
+      python manage.py migrate &&
+      gunicorn core.wsgi --bind 0.0.0.0:8000"
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
-    environment:
-      - DB_HOST=db
-      - DB_NAME=app
-      - DB_USER=postgres
-      - DB_PASS=umniedziala
-      - SPOTIPY_CLIENT_ID=fffd7d3c7c9e47169f115bd62e2f4c47
-      - SPOTIPY_CLIENT_SECRET=0d363626bc654faa93276b4b7b16649b
+      - staticfiles:/api/static/
+    env_file:
+      - .env
     depends_on:
       - db
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:8080"
+    volumes:
+      - staticfiles:/static/
+    depends_on:
+      - api
   db:
-    image: postgres:10-alpine
+    image: postgres:11-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=app
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=umniedziala
+      - POSTGRES_PASSWORD=hello
+volumes:
+  staticfiles:
+  postgres_data:
